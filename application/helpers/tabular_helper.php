@@ -180,7 +180,8 @@ function get_people_manage_table_headers()
 		array('last_name' => $CI->lang->line('common_last_name')),
 		array('first_name' => $CI->lang->line('common_first_name')),
 		array('email' => $CI->lang->line('common_email')),
-		array('phone_number' => $CI->lang->line('common_phone_number'))
+		array('phone_number' => $CI->lang->line('common_phone_number')),
+		array('employee_category' => $CI->lang->line('items_category'))
 	);
 
 	if($CI->Employee->has_grant('messages', $CI->session->userdata('person_id')))
@@ -198,6 +199,7 @@ function get_person_data_row($person)
 {
 	$CI =& get_instance();
 	$controller_name = strtolower(get_class($CI));
+	$emp_category = arr_employee_category();
 
 	return array (
 		'people.person_id' => $person->person_id,
@@ -205,6 +207,7 @@ function get_person_data_row($person)
 		'first_name' => $person->first_name,
 		'email' => empty($person->email) ? '' : mailto($person->email, $person->email),
 		'phone_number' => $person->phone_number,
+		'employee_category' => $emp_category[$person->employee_category],
 		'messages' => empty($person->phone_number) ? '' : anchor("Messages/view/$person->person_id", '<span class="glyphicon glyphicon-phone"></span>',
 			array('class'=>'modal-dlg', 'data-btn-submit' => $CI->lang->line('common_submit'), 'title'=>$CI->lang->line('messages_sms_send'))),
 		'edit' => anchor($controller_name."/view/$person->person_id", '<span class="glyphicon glyphicon-edit"></span>',
@@ -227,6 +230,7 @@ function get_customer_manage_table_headers()
 		array('first_name' => $CI->lang->line('common_first_name')),
 		array('email' => $CI->lang->line('common_email')),
 		array('phone_number' => $CI->lang->line('common_phone_number')),
+		array('sales' => $CI->lang->line('common_sales')),
 		array('total' => $CI->lang->line('common_total_spent'), 'sortable' => FALSE)
 	);
 
@@ -241,7 +245,7 @@ function get_customer_manage_table_headers()
 /*
 Get the html data row for the customer
 */
-function get_customer_data_row($person, $stats)
+function get_customer_data_row($person, $stats, $employee_name = '')
 {
 	$CI =& get_instance();
 
@@ -253,6 +257,8 @@ function get_customer_data_row($person, $stats)
 		'first_name' => $person->first_name,
 		'email' => empty($person->email) ? '' : mailto($person->email, $person->email),
 		'phone_number' => $person->phone_number,
+		'employee_category' => $person->employee_category,
+		'sales' => $employee_name,
 		'total' => to_currency($stats->total),
 		'messages' => empty($person->phone_number) ? '' : anchor("Messages/view/$person->person_id", '<span class="glyphicon glyphicon-phone"></span>',
 			array('class'=>'modal-dlg', 'data-btn-submit' => $CI->lang->line('common_submit'), 'title'=>$CI->lang->line('messages_sms_send'))),
@@ -798,5 +804,9 @@ function get_cash_up_data_row($cash_up)
 			array('class'=>'modal-dlg', 'data-btn-submit' => $CI->lang->line('common_submit'), 'title'=>$CI->lang->line($controller_name.'_update'))
 		)
 	);
+}
+function arr_employee_category()
+{
+	return ['sales' => 'Sales','inventory' => 'Inventory','admin' => 'Admin'];
 }
 ?>
